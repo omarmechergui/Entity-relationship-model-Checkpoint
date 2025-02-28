@@ -1,0 +1,58 @@
+-- Gym Chain Entity-Relationship Model
+
+-- Gymnasium Entity
+CREATE TABLE Gymnasium (
+    gym_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    address TEXT NOT NULL,
+    phone_number VARCHAR(15) NOT NULL
+);
+
+-- Member Entity
+CREATE TABLE Member (
+    member_id SERIAL PRIMARY KEY,
+    last_name VARCHAR(50) NOT NULL,
+    first_name VARCHAR(50) NOT NULL,
+    address TEXT NOT NULL,
+    date_of_birth DATE NOT NULL,
+    gender CHAR(1) CHECK (gender IN ('M', 'F')),
+    gym_id INT NOT NULL,
+    FOREIGN KEY (gym_id) REFERENCES Gymnasium(gym_id)
+);
+
+-- Coach Entity
+CREATE TABLE Coach (
+    coach_id SERIAL PRIMARY KEY,
+    last_name VARCHAR(50) NOT NULL,
+    first_name VARCHAR(50) NOT NULL,
+    age INT CHECK (age > 18),
+    specialty VARCHAR(100) NOT NULL
+);
+
+-- Session Entity
+CREATE TABLE Session (
+    session_id SERIAL PRIMARY KEY,
+    sport_type VARCHAR(100) NOT NULL,
+    schedule TIMESTAMP NOT NULL,
+    max_capacity INT DEFAULT 20 CHECK (max_capacity <= 20),
+    gym_id INT NOT NULL,
+    FOREIGN KEY (gym_id) REFERENCES Gymnasium(gym_id)
+);
+
+-- Session-Member Relationship (Registration)
+CREATE TABLE SessionMember (
+    session_id INT NOT NULL,
+    member_id INT NOT NULL,
+    PRIMARY KEY (session_id, member_id),
+    FOREIGN KEY (session_id) REFERENCES Session(session_id),
+    FOREIGN KEY (member_id) REFERENCES Member(member_id)
+);
+
+-- Session-Coach Relationship
+CREATE TABLE SessionCoach (
+    session_id INT NOT NULL,
+    coach_id INT NOT NULL,
+    PRIMARY KEY (session_id, coach_id),
+    FOREIGN KEY (session_id) REFERENCES Session(session_id),
+    FOREIGN KEY (coach_id) REFERENCES Coach(coach_id)
+);
